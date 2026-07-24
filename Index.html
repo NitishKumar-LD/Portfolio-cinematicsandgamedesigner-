@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nitish Kumar Panda | Narrative &amp; Gameplay Designer — Cinematics &amp; Lighting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0b09;
+    --surface: #14160f;
+    --surface-2: #1b1d15;
+    --sage: #4a5449;
+    --sage-dim: #333c30;
+    --amber: #c98a4b;
+    --amber-dim: #8a5f36;
+    --blood: #5e2626;
+    --text: #e9e6dc;
+    --text-dim: #9a9c8f;
+    --text-faint: #5c5e53;
+    --hair: rgba(233,230,220,0.09);
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* film grain + vignette */
+  body::before{
+    content:"";
+    position: fixed; inset:0;
+    pointer-events:none;
+    z-index: 200;
+    background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode: overlay;
+    opacity: 0.5;
+  }
+  body::after{
+    content:"";
+    position: fixed; inset:0;
+    pointer-events:none;
+    z-index: 199;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.55) 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+
+  a{ color: inherit; text-decoration:none; }
+
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- TOPBAR ---------- */
+  .topbar{
+    position: sticky; top:0; z-index: 100;
+    background: rgba(10,11,9,0.86);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--hair);
+  }
+  .topbar-inner{
+    max-width: 1040px; margin:0 auto; padding: 16px 28px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar-name{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px; letter-spacing: 0.08em; color: var(--text-dim);
+  }
+  .rec{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 0.08em; color: var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .rec-dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--blood);
+    box-shadow: 0 0 0 0 rgba(94,38,38,0.6);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(94,38,38,0.55); }
+    50%{ box-shadow: 0 0 0 5px rgba(94,38,38,0); }
+  }
+
+  /* ---------- HERO / SLATE ---------- */
+  .hero{
+    padding: 90px 0 60px;
+    position: relative;
+  }
+  .slate{
+    border: 1px solid var(--hair);
+    background: linear-gradient(180deg, var(--surface), var(--bg));
+    padding: 32px 32px 28px;
+    position: relative;
+  }
+  .slate::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height: 34px;
+    background: repeating-linear-gradient(-45deg, var(--surface-2) 0 22px, var(--bg) 22px 44px);
+    border-bottom: 1px solid var(--hair);
+  }
+  .slate-row{
+    display:flex; flex-wrap:wrap; gap: 6px 28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.06em; color: var(--text-faint);
+    padding-top: 44px;
+    text-transform: uppercase;
+  }
+  .slate-row span b{ color: var(--text-dim); font-weight: 500; }
+
+  .hero-name{
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin-top: 22px;
+    color: var(--text);
+  }
+  .hero-name em{
+    font-style: italic;
+    font-weight: 400;
+    color: var(--amber);
+  }
+  .hero-role{
+    margin-top: 14px;
+    font-size: 1.05rem;
+    color: var(--sage);
+    color: #8fa085;
+    max-width: 540px;
+  }
+  .hero-desc{
+    margin-top: 18px;
+    max-width: 560px;
+    color: var(--text-dim);
+    font-size: 0.98rem;
+  }
+  .hero-cta{
+    margin-top: 30px;
+    display:flex; gap: 14px; flex-wrap: wrap;
+  }
+  .btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12.5px; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 12px 20px;
+    border: 1px solid var(--hair);
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .btn.primary{
+    background: var(--amber-dim);
+    border-color: var(--amber-dim);
+    color: #16160f;
+    font-weight:600;
+  }
+  .btn.primary:hover{ background: var(--amber); border-color: var(--amber); }
+  .btn.ghost:hover{ border-color: var(--sage); color: #cfd6c9; }
+
+  /* ---------- TIMECODE SECTION LABELS ---------- */
+  .reel-label{
+    display:flex; align-items:center; gap: 16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 12px; letter-spacing: 0.08em; color: var(--amber);
+    margin-bottom: 26px;
+    text-transform: uppercase;
+  }
+  .reel-label .tc{ color: var(--text-faint); }
+  .reel-label .line{ flex:1; height:1px; background: var(--hair); }
+
+  section{ padding: 74px 0; border-top: 1px solid var(--hair); }
+
+  h2.sec-title{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+    margin-bottom: 30px;
+    letter-spacing: -0.005em;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{
+    display:grid; grid-template-columns: 1.3fr 1fr; gap: 48px;
+  }
+  .about-lead{
+    font-size: 1.08rem; color: #d5d2c6;
+  }
+  .about-lead b{ color: var(--amber); font-weight: 600; }
+  .about-side{
+    border-left: 1px solid var(--hair);
+    padding-left: 26px;
+  }
+  .about-side .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text-faint); letter-spacing: .08em; text-transform:uppercase;
+    margin-bottom: 4px;
+  }
+  .about-side .v{ color: var(--text-dim); font-size: .92rem; margin-bottom: 20px; }
+
+  /* ---------- EXPERIENCE ---------- */
+  .job{
+    padding: 22px 0;
+    border-bottom: 1px solid var(--hair);
+    display:grid; grid-template-columns: 200px 1fr; gap: 24px;
+  }
+  .job:first-child{ padding-top:0; }
+  .job:last-child{ border-bottom:none; }
+  .job-meta .studio{ font-weight:600; color: var(--text); }
+  .job-meta .role{ color: var(--amber); font-size: .88rem; margin-top: 2px; }
+  .job-meta .dates{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text-faint); margin-top: 8px;
+  }
+  .job-list{ color: var(--text-dim); font-size: .94rem; }
+  .job-list li{ margin-bottom: 8px; list-style: none; padding-left: 18px; position: relative; }
+  .job-list li::before{
+    content:"—"; position:absolute; left:0; color: var(--sage); opacity:.8;
+  }
+  .job-list b{ color: #cfd6c9; font-weight: 600; }
+
+  /* ---------- TOOLSET ---------- */
+  .tool-grid{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+    background: var(--hair);
+    border: 1px solid var(--hair);
+  }
+  .tool-cell{
+    background: var(--bg);
+    padding: 20px 22px;
+  }
+  .tool-cell .cat{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 10px;
+  }
+  .tool-cell .items{ color: var(--text-dim); font-size: .92rem; }
+
+  /* ---------- PROJECTS / SCENES ---------- */
+  .scene{
+    border: 1px solid var(--hair);
+    margin-bottom: 26px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .scene-head{
+    padding: 18px 24px;
+    display:flex; align-items:center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--hair);
+  }
+  .scene-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text-faint); letter-spacing: .08em;
+  }
+  .scene-tags{ display:flex; gap:8px; flex-wrap:wrap; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; padding: 3px 9px;
+    border: 1px solid var(--sage-dim);
+    color: #a9b3a2;
+    letter-spacing: .04em;
+  }
+  .scene-body{ padding: 24px; }
+  .scene-title{
+    font-family:'Fraunces', serif;
+    font-weight: 600; font-size: 1.35rem; margin-bottom: 6px;
+  }
+  .scene-flag{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing:.08em; text-transform:uppercase;
+    color: var(--blood); border: 1px solid var(--blood);
+    padding: 2px 8px; margin-bottom: 14px;
+  }
+  .scene-cols{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 14px;
+  }
+  .scene-cols h4{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-faint); margin-bottom: 10px;
+  }
+  .scene-cols p, .scene-cols li{ color: var(--text-dim); font-size: .92rem; }
+  .scene-cols li{ list-style:none; padding-left: 16px; position:relative; margin-bottom:6px; }
+  .scene-cols li::before{ content:"·"; position:absolute; left:2px; color: var(--amber); }
+  .scene-link{
+    margin-top: 16px; display:inline-block;
+    font-family:'IBM Plex Mono', monospace; font-size: 11.5px;
+    color: var(--amber); border-bottom: 1px solid var(--amber-dim);
+  }
+
+  /* ---------- CREDITS / EDU ---------- */
+  .credits-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .credit-card{ border: 1px solid var(--hair); padding: 20px 22px; }
+  .credit-card .role{ color: var(--amber); font-size: .82rem; font-family:'IBM Plex Mono', monospace; letter-spacing:.05em; margin-bottom:6px; }
+  .credit-card .name{ font-weight:600; margin-bottom:4px; }
+  .credit-card .dates{ color: var(--text-faint); font-size: .82rem; font-family:'IBM Plex Mono', monospace; }
+
+  /* ---------- CONTACT / ROLL ---------- */
+  .roll{
+    text-align:center; padding: 90px 0 70px;
+  }
+  .roll-title{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 18px;
+  }
+  .roll-desc{ color: var(--text-dim); max-width: 480px; margin: 0 auto 30px; }
+  .roll-links{ display:flex; gap: 18px; justify-content:center; flex-wrap:wrap; margin-top: 10px; }
+
+  footer{
+    border-top: 1px solid var(--hair);
+    padding: 26px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--text-faint);
+    text-align:center; letter-spacing: .04em;
+  }
+
+  @media (max-width: 760px){
+    .about-grid, .credits-grid{ grid-template-columns: 1fr; }
+    .about-side{ border-left:none; border-top:1px solid var(--hair); padding-left:0; padding-top:20px; }
+    .job{ grid-template-columns: 1fr; }
+    .tool-grid{ grid-template-columns: 1fr; }
+    .scene-cols{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="topbar-name">NITISH KUMAR PANDA — NARRATIVE + GAMEPLAY DESIGN / CINEMATICS &amp; LIGHTING</div>
+      <div class="rec"><span class="rec-dot"></span><span id="tc">REC 00:00:00</span></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="hero">
+      <div class="slate">
+        <div class="slate-row">
+          <span>PROD <b>BrainKraft / Indie</b></span>
+          <span>ROLE <b>Narrative + Gameplay Designer</b></span>
+          <span>ENGINE <b>Unreal Engine 5</b></span>
+          <span>SCENE <b>01</b></span>
+          <span>TAKE <b>Final</b></span>
+        </div>
+        <h1 class="hero-name">Nitish Kumar<br><em>Panda</em></h1>
+        <p class="hero-role">Narrative &amp; Gameplay Designer — Cinematics &amp; Lighting Artist, Unreal Engine 5</p>
+        <p class="hero-desc">I design how a story is told through play — structuring narrative beats, pacing gameplay around them, then directing the cinematics and lighting that carry the emotion between them. One person doing the writing, the systems, and the final shot.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="mailto:kumarpandanitish038@gmail.com">Get in Touch</a>
+          <a class="btn ghost" href="https://github.com/NitishKumar-LD" target="_blank">GitHub ↗</a>
+          <a class="btn ghost" href="https://www.linkedin.com/in/nitish-kumar-panda-14a707189/" target="_blank">LinkedIn ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="reel-label"><span class="tc">00:01</span> ABOUT <span class="line"></span></div>
+      <h2 class="sec-title">Story Before Spectacle</h2>
+      <div class="about-grid">
+        <p class="about-lead">
+          I work across the three layers that make a scene land — <b>narrative structure</b> (what the story is and when it's revealed), <b>gameplay design</b> (how the player earns that revelation), and <b>cinematics &amp; lighting</b> (how it actually looks and feels in the moment). Story objects that reward curiosity, dream sequences with distinct triggers, and light that carries dread before any threat appears — all authored end to end, not handed off between departments.
+        </p>
+        <div class="about-side">
+          <div class="k">Core Focus</div>
+          <div class="v">Narrative design, gameplay pacing, cinematic direction, lighting artistry</div>
+          <div class="k">Engine</div>
+          <div class="v">Unreal Engine, Unity</div>
+          <div class="k">Also Ships</div>
+          <div class="v">Mobile titles independently under BrainKraft</div>
+          <div class="k">Based In</div>
+          <div class="v">Ahmedabad, India</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="reel-label"><span class="tc">00:02</span> EXPERIENCE <span class="line"></span></div>
+      <h2 class="sec-title">Work History</h2>
+
+      <div class="job">
+        <div class="job-meta">
+          <div class="studio">Underdogs Studio</div>
+          <div class="role">Cinematics &amp; Gameplay Designer (Remote)</div>
+          <div class="dates">Mumbai · Dec 2025 – May 2026</div>
+        </div>
+        <ul class="job-list">
+          <li>Designed the <b>co-op puzzle logic and interaction rules</b> that force two players to communicate and coordinate to progress.</li>
+          <li>Balanced puzzle difficulty and pacing across the shared playthrough so both players stay equally engaged.</li>
+          <li>Directed reveal and payoff moments so both players experience a solved puzzle's payoff together, not staggered.</li>
+          <li>Iterated mechanics directly from playtest feedback.</li>
+        </ul>
+      </div>
+
+      <div class="job">
+        <div class="job-meta">
+          <div class="studio">Akiyam</div>
+          <div class="role">Gameplay &amp; Narrative Designer · Assassin: The First List</div>
+          <div class="dates">Gujarat · Feb 2023 – Jan 2024</div>
+        </div>
+        <ul class="job-list">
+          <li>Designed <b>stealth gameplay systems</b> — detection rules, cover mechanics, and encounter pacing — across 4 full missions.</li>
+          <li>Used mechanic-driven tension (patrol patterns, escalating detection stakes) to reinforce the narrative weight of each mission.</li>
+          <li>Game shipped on <b>Steam</b>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- TOOLSET -->
+    <section id="toolset">
+      <div class="reel-label"><span class="tc">00:03</span> TOOLSET <span class="line"></span></div>
+      <h2 class="sec-title">What I Work With</h2>
+      <div class="tool-grid">
+        <div class="tool-cell">
+          <div class="cat">Engine</div>
+          <div class="items">Unreal Engine, Unity</div>
+        </div>
+        <div class="tool-cell">
+          <div class="cat">Narrative Systems</div>
+          <div class="items">Environmental story objects, beat triggers, branching dream/vision sequences, documentation in Notion</div>
+        </div>
+        <div class="tool-cell">
+          <div class="cat">Cinematic Craft</div>
+          <div class="items">Lumen &amp; dynamic lighting as narrative device, mood-driven color scripting, tension pacing</div>
+        </div>
+        <div class="tool-cell">
+          <div class="cat">Gameplay Design</div>
+          <div class="items">Puzzle &amp; mechanic design, co-op pacing, stealth encounter design, player flow</div>
+        </div>
+        <div class="tool-cell">
+          <div class="cat">Game Design</div>
+          <div class="items">GDDs, story documentation, iterative critique passes</div>
+        </div>
+        <div class="tool-cell">
+          <div class="cat">Workflow</div>
+          <div class="items">AI-assisted / vibe coding pipelines, rapid iteration under studio deadlines</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="work">
+      <div class="reel-label"><span class="tc">00:04</span> SELECTED WORK <span class="line"></span></div>
+      <h2 class="sec-title">Scenes From the Reel</h2>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 01 / UE5 · INDIE TEAM</div>
+          <div class="scene-tags"><span class="tag">Narrative Design</span><span class="tag">Cinematics</span><span class="tag">Horror</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">Ravenwood: The Absence</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Narrative Architecture</h4>
+              <ul>
+                <li>Written and structured environmental story objects with an in-world inspection system</li>
+                <li>Authored "Sara's Journal" — an 8-entry narrative thread told entirely in a secondary character's voice across three episodes</li>
+                <li>Rewrote a supporting character's backstory to mirror the protagonist's core flaw, reinforcing theme through structure, not exposition</li>
+                <li>Restructured a recurring dream sequence into three distinct triggers, each with its own mechanic</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Cinematic Direction</h4>
+              <ul>
+                <li>Locked visual direction: desaturated green-grey exteriors, mixed warm/cold practical interior lighting</li>
+                <li>Designed the final confrontation as three escalating waves rather than one static encounter</li>
+                <li>Grey-boxed Episode 1's full spatial flow using a real apartment as architectural reference</li>
+                <li>All story and design docs iterated through multiple critique passes (7.2 → 8.2/10)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 02 / UE5 · STUDIO PROJECT</div>
+          <div class="scene-tags"><span class="tag">Cinematics</span><span class="tag">Gameplay Design</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">Co-op Puzzle Level — Underdogs Studio</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Gameplay Design</h4>
+              <ul>
+                <li>Designed synchronized co-op puzzles built around forced communication and shared spatial understanding between two players</li>
+                <li>Built split-path navigation that paces tension and payoff evenly across both player perspectives</li>
+                <li>Iterated puzzle mechanics directly from playtest feedback</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Cinematics &amp; Pacing</h4>
+              <p>Worked as Cinematics &amp; Gameplay Designer on the project — framing key reveal moments and shared-progress beats so both players experience the payoff of a puzzle at the same time, not staggered.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 03 / STEAM · SHIPPED</div>
+          <div class="scene-tags"><span class="tag">Stealth Gameplay</span><span class="tag">Encounter Design</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">Assassin: The First List</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Design</h4>
+              <ul>
+                <li>Designed stealth mechanics and detection systems across 4 full missions</li>
+                <li>Non-linear routes with mechanic-driven risk/reward choices</li>
+                <li>Cover and encounter placement built into the core stealth gameplay loop</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Result</h4>
+              <p>Shipped as part of the Akiyam team on Steam — full pipeline from concept to release.</p>
+            </div>
+          </div>
+          <a class="scene-link" href="https://store.steampowered.com/app/2390670/ASSASSIN_The_First_List_Beta/" target="_blank">View on Steam ↗</a>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 04 / UE5 · PERSONAL PROJECT</div>
+          <div class="scene-tags"><span class="tag">Level Design</span><span class="tag">Environmental Storytelling</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">Zombie Survival Level — WWZ Inspired</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Space as Story</h4>
+              <p>Underground metro facility with a multi-zone layout; blood decals and environmental detail communicate danger without any UI.</p>
+            </div>
+            <div>
+              <h4>Tension Through Contrast</h4>
+              <p>Tight corridors opening into exposed areas — spatial rhythm designed to control player anxiety scene to scene.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 05 / UE · ITCH.IO</div>
+          <div class="scene-tags"><span class="tag">Game Design</span><span class="tag">Economy Design</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">3D Hustle</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Game Design</h4>
+              <ul>
+                <li>Authored the complete GDD as sole game designer</li>
+                <li>Designed the core economy loop end to end</li>
+                <li>Platforming geometry tuned specifically for player momentum</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Flow</h4>
+              <p>Focused on maintaining player momentum through carefully paced platforming geometry and intuitive spatial layout.</p>
+            </div>
+          </div>
+          <a class="scene-link" href="https://pranavkamat.itch.io/the-3d-hustle" target="_blank">Play on Itch.io ↗</a>
+          &nbsp;&nbsp;
+          <a class="scene-link" href="https://docs.google.com/document/d/1zH1rW08jF3_QYRxq7emW00WzOABPqaACaSbNgphtx4I/edit?usp=sharing" target="_blank">View GDD ↗</a>
+        </div>
+      </div>
+
+      <div class="scene">
+        <div class="scene-head">
+          <div class="scene-num">SCENE 06 / UE · 3D PLATFORMER · ITCH.IO</div>
+          <div class="scene-tags"><span class="tag">Gameplay Design</span><span class="tag">Cinematics</span></div>
+        </div>
+        <div class="scene-body">
+          <div class="scene-title">The Dyeing World</div>
+          <div class="scene-cols">
+            <div>
+              <h4>Navigation Design</h4>
+              <p>Color-coded environment shapes designed to guide movement naturally — no UI waypoints needed. Natural signposting with balanced reward traversal, so every jump feels intentional.</p>
+            </div>
+            <div>
+              <h4>Cinematics</h4>
+              <p>Shot and cut the project's cinematic trailer myself in DaVinci Resolve — framing, shot selection, and edit handled solo alongside the gameplay design work.</p>
+            </div>
+          </div>
+          <a class="scene-link" href="https://limitlesswaves.itch.io/the-dyeing-world" target="_blank">View Project ↗</a>
+          &nbsp;&nbsp;
+          <a class="scene-link" href="https://youtu.be/ZLQC3IzaHOw" target="_blank">Watch Cinematic Trailer ↗</a>
+        </div>
+      </div>
+    </section>
+    <section id="credits">
+      <div class="reel-label"><span class="tc">00:05</span> CREDITS <span class="line"></span></div>
+      <h2 class="sec-title">Education &amp; Certification</h2>
+      <div class="credits-grid">
+        <div class="credit-card">
+          <div class="role">Master of Computer Applications</div>
+          <div class="name">KIIT University, Bhubaneswar</div>
+          <div class="dates">2022 – 2024</div>
+        </div>
+        <div class="credit-card">
+          <div class="role">Game Design Certification</div>
+          <div class="name">Gamer2Maker</div>
+          <div class="dates">2024 – 2025</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="roll">
+    <div class="wrap">
+      <div class="reel-label" style="justify-content:center; margin-bottom:20px;"><span class="tc">00:06</span> END REEL</div>
+      <div class="roll-title">Let's Build the Next Scene</div>
+      <p class="roll-desc">Open to narrative design, cinematic design, and gameplay roles in Unreal Engine 5 — remote or on-site.</p>
+      <div class="roll-links">
+        <a class="btn primary" href="mailto:kumarpandanitish038@gmail.com">kumarpandanitish038@gmail.com</a>
+        <a class="btn ghost" href="https://github.com/NitishKumar-LD" target="_blank">GitHub ↗</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/nitish-kumar-panda-14a707189/" target="_blank">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>© 2026 Nitish Kumar Panda — Built one scene at a time.</footer>
+
+  <script>
+    // subtle ticking timecode in the topbar, purely atmospheric
+    let s = 0;
+    const tc = document.getElementById('tc');
+    function pad(n){ return n.toString().padStart(2,'0'); }
+    setInterval(() => {
+      s++;
+      const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+      tc.textContent = `REC ${pad(h)}:${pad(m)}:${pad(sec)}`;
+    }, 1000);
+  </script>
+
+</body>
+</html>
